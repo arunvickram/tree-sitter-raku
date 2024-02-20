@@ -1,3 +1,0 @@
-sub name() {
-    return;
-}

@@ -8,11 +8,31 @@ sub make() {
 
 (source_file
   (subroutine_definition
-    (identifier)
+    (identifier (bareword))
     (parameter_list)
     (block
       (return_statement)))
   )
+
+
+================================================================================
+Basic subroutine declaration
+================================================================================
+sub make($x, $y) {
+    return;
+}
+--------------------------------------------------------------------------------
+
+(source_file
+  (subroutine_definition
+    (identifier (bareword))
+    (parameter_list
+      (variable_name
+        (identifier (bareword)))
+      (variable_name
+        (identifier (bareword))))
+    (block
+      (return_statement))))
 
 
 ================================================================================
@@ -25,7 +45,7 @@ multi make() {
 
 (source_file
   (multimethod_definition
-    (identifier)
+    (identifier (bareword))
     (parameter_list)
     (block
       (return_statement)))
@@ -41,7 +61,7 @@ multi அச்சமில்லை'snofear103934() {
 
 (source_file
   (multimethod_definition
-    (identifier)
+    (identifier (bareword))
     (parameter_list)
     (block
       (return_statement)))

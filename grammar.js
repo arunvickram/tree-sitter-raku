@@ -43,14 +43,20 @@ module.exports = grammar({
 
     parameter_list: $ => seq(
       '(',
-      // TODO: parameters
+      optional(commaSep1($.variable_name)),
       ')'
     ),
 
-    // parameter: $ => choice(
-    //   $.typed_parameter,
-    //   $.untyped_parameter
-    // ),
+    parameter: $ => choice(
+      // $.typed_parameter,
+      // $.keyword_parameter
+      $.untyped_parameter
+    ),
+
+    untyped_parameter: $ => field(
+      'parameter',
+      $.identifier
+    ),
 
     // typed_parameter: $ => seq(
 
@@ -84,11 +90,18 @@ module.exports = grammar({
     extended_identifier: $ => /[\p{L}]+/,
     compound_identifier: $ => /[\p{L}]+/,
 
+    identifier: $ => choice(
+      seq('$', $.bareword),
+      seq('@', $.bareword),
+      seq('%', $.bareword),
+      seq("\\", $.bareword),
+      $.bareword,
+    ),
 
-    identifier: $ => {
+    bareword: $ => {
       const alpha = /[\p{Letter}\p{Mark}]+/;
-      const dashThenAlphanumeric = /-?[\p{Letter}\p{Mark}\p{Number}]+/;
-      const quoteThenAlphanumeric = /'?[\p{Letter}\p{Mark}\p{Number}]+/;
+      const dashThenAlphanumeric = /(-\p{L})?[\p{Letter}\p{Mark}\p{Number}]+/;
+      const quoteThenAlphanumeric = /('\p{L})?[\p{Letter}\p{Mark}\p{Number}]+/;
       return token(seq(alpha, repeat(choice(dashThenAlphanumeric, quoteThenAlphanumeric))));
     },
 
@@ -105,11 +118,6 @@ module.exports = grammar({
 
 /**
  * Creates a rule to match one or more of the rules separated by a comma
- *
- * @param {RuleOrLiteral} rule
- *
- * @return {SeqRule}
- *
  */
 function commaSep1(rule) {
   return sepBy1(',', rule);
@@ -117,11 +125,6 @@ function commaSep1(rule) {
 
 /**
  * Creates a rule to optionally match one or more of the rules separated by a comma
- *
- * @param {RuleOrLiteral} rule
- *
- * @return {SeqRule}
- *
  */
 function commaSep(rule) {
   return sepBy(',', rule);
@@ -129,12 +132,6 @@ function commaSep(rule) {
 
 /**
  * Creates a rule to optionally match one or more of the rules separated by a separator
- *
- * @param {RuleOrLiteral} sep
- *
- * @param {RuleOrLiteral} rule
- *
- * @return {ChoiceRule}
  */
 function sepBy(sep, rule) {
   return optional(sepBy1(sep, rule));
@@ -142,12 +139,6 @@ function sepBy(sep, rule) {
 
 /**
  * Creates a rule to match one or more of the rules separated by a separator
- *
- * @param {RuleOrLiteral} sep
- *
- * @param {RuleOrLiteral} rule
- *
- * @return {SeqRule}
  */
 function sepBy1(sep, rule) {
   return seq(rule, repeat(seq(sep, rule)));
